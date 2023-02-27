@@ -1,0 +1,48 @@
+<div class="container mx-auto px-8 pt-4" *ngIf="question?.title">
+  <div class="flex items-center mb-4">
+    <a [routerLink]="['/home']" class="flex items-center m-l-0 mr-4">
+      <fa-icon [icon]="faChevronLeft" class="m-t-2"></fa-icon>
+    </a>
+    <h1 class="text-xl font-bold">{{ question.title }}</h1>
+  </div>
+  <div class="mb-6 prose dark:prose-invert prose-sm">
+    <markdown ngPreserveWhitespaces [data]="question.message"></markdown>
+  </div>
+  <h2 class="text-lg font-bold mb-2">Answers</h2>
+  <div class="mb-4" *ngFor="let answer of answers">
+    <div class="mb-4 flex items-center" *ngIf="answer.id && answer.pubkey">
+      <div class="flex flex-col items-center mr-4">
+        <button class="text-blue-500" (click)="upvoteAnswer(answer.id, answer.pubkey)">
+          <fa-icon [icon]="faChevronUp"></fa-icon>
+        </button>
+        <span class="font-bold">{{answer.vote}}</span>
+        <button class="text-red-500" (click)="downvoteAnswer(answer.id, answer.pubkey)">
+          <fa-icon [icon]="faChevronDown"></fa-icon>
+        </button>
+      </div>
+      <div class="bg-white dark:bg-gray-800/25 p-4 shadow-md rounded-lg flex-grow">
+        <div class="mb-4 prose dark:prose-invert prose-sm">
+          <markdown ngPreserveWhitespaces [data]="answer.message"></markdown>
+        </div>
+        <hr class="w-full border-gray-200 dark:border-gray-800 mb-2">
+        <div class="flex items-center">
+          <button class="flex items-center" (click)="tipAnswer(answer.id)">
+            <fa-icon [icon]="faBolt" class="text-yellow-500"></fa-icon>
+            <span class="ml-2">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white dark:bg-gray-800/25 p-4 shadow-md rounded-lg ml-8">
+    <form (submit)="createAnswer()">
+      <textarea 
+        name="answer" 
+        [(ngModel)]="answer" 
+        class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25" 
+        placeholder="Add a answer...">
+      </textarea>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-400">Add Answer</button>
+    </form>
+  </div>
+</div>

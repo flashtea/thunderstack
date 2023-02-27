@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Topic } from '../../models/topic';
+import { Question } from '../../models/model';
 import { NostrService } from '../../services/nostr.service';
 
 @Component({
@@ -8,15 +8,15 @@ import { NostrService } from '../../services/nostr.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  topics: any[] = [];
+  questions: Question[] = [];
 
   constructor(private nostr: NostrService) { }
 
   async ngOnInit(): Promise<void> {
     this.nostr.isConnected().subscribe(connected => {
       if (connected) {
-        this.nostr.listTopics().then((topics: Topic[]) => {
-          this.topics = topics
+        this.nostr.listQuestions().then((questions: Question[]) => {
+          this.questions = questions
         });
       }
     });

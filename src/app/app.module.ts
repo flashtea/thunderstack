@@ -1,38 +1,32 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
-import { CreatePostComponent } from './components/create-post/create-post.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { PostDetailComponent } from './components/post-detail/post-detail.component';
-import { EditPostComponent } from './components/edit-post/edit-post.component';
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
 import { ErrorHandlingComponent } from './error-handling/error-handling.component';
-import { TopicComponent } from './components/topic/topic.component';
-import { FormsModule } from '@angular/forms';
-import { CreateTopicComponent } from './components/create-topic/create-topic.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { QuestionComponent } from './components/question/question.component';
+import { CreateQuestionComponent } from './components/create-question/create-question.component';
+import { MarkdownModule } from 'ngx-markdown';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    CreatePostComponent,
-    ProfileComponent,
-    PostDetailComponent,
-    EditPostComponent,
     LoginSignupComponent,
     ErrorHandlingComponent,
-    TopicComponent,
-    CreateTopicComponent
+    QuestionComponent,
+    CreateQuestionComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MarkdownModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,14 +1,16 @@
-# nostrdd
+# ZapStack
 
-A Reddit clone built using Nostr, a decentralized event system.
+A Stackoverflow clone built using Nostr, a decentralized event system.
 
-This project was created to demonstrate how Nostr can be used to build a decentralized, reddit like, application. It allows users to create and join topics, post content, and reply to other users' posts.
+This project was created to demonstrate how Nostr can be used to build a decentralized, stackoverflow like, application.
+It allows users to create questions, tag them, answer questions, comment and reward answers using lightning payments.
 
 ## Features
 
-- Creating and viewing topics (comparable to subreddits)
-- Posting to topics (threads)
-- Replying to other users posts (comments)
+- Creating and viewing questions
+- Answering qestions
+- Replying to other users answers (comments)
+- "Zap" good answers using lightning to send rewards 
 - Decentralized architecture using nostr
 - Open-source code
 
@@ -31,8 +33,11 @@ This application uses Nostr's event types to represent data and interactions bet
 
 The application uses the following event types:
 
-- Kind 40: Topic Creation. This event is used when a user creates a new topic. The event's content includes the topic's name, description, and picture.
-- Kind 42: Post Creation and Reply. This event is used when a user creates a new post or replies to an existing post. The event's content includes the post's content and metadata, such as the post's title and author. Posts are associated with a particular topic using the event's tags field. Replies are associated with the post being replied to using the event's tags field.
+- Kind 40: Question Creation. This event is used when a user creates a new question. The event's content includes the question's title, body, and any associated tags.
+- Kind 42: Answer Creation. This event is used when a user creates a new answer to an existing question. The event's content includes the answer's body and metadata, such as the answer's author and the ID of the question being answered. Answers are associated with a particular question using the event's tags field.
+- Kind 42: Reactions. This event is used when a user up or downvotes a answer.
+
+The use of these event types enables decentralized storage of StackOverflow posts, questions, and answers. Users can create and interact with content, and search for content based on associated tags. This approach allows for greater control and ownership of the data by the users themselves, rather than relying on centralized platforms.
 
 ## License
 

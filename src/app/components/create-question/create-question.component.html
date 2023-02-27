@@ -1,37 +1,37 @@
 <div class="container mx-auto px-8 mt-4">
-  <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Create a New Topic</h1>
+  <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Create a new Question</h1>
 
   <form (submit)="onSubmit()">
     <div class="mb-4">
-      <label class="block font-bold mb-2" for="name">
-        Name
+      <label class="block font-bold mb-2" for="title">
+        Title
       </label>
       <input
         class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
         type="text"
         id="name"
-        [(ngModel)]="newTopic.name"
+        [(ngModel)]="newQuestion.title"
         name="name"
         required
       />
     </div>
 
     <div class="mb-4">
-      <label class="block font-bold mb-2" for="about">
-        About
+      <label class="block font-bold mb-2" for="question">
+        Question
       </label>
       <textarea
         class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
         id="about"
-        [(ngModel)]="newTopic.about"
-        name="about"
+        [(ngModel)]="newQuestion.question"
+        name="question"
         required
       ></textarea>
     </div>
 
     <div class="flex justify-between">
       <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-400" type="submit">
-        Create Topic
+        Create Question
       </button>
       <a routerLink="/" class="text-blue-500 hover:underline dark:text-blue-400">Cancel</a>
     </div>
