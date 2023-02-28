@@ -68,7 +68,7 @@ export class NostrService {
       content: JSON.stringify(content)
     }
 
-    if(questionId) {
+    if (questionId) {
       event.tags.push(['e', questionId, this.relay.url])
     }
 
@@ -85,7 +85,7 @@ export class NostrService {
 
     const events: Event[] = await this.relay.list([filter]);
     console.log(events);
-    
+
     return events.map((event: Event) => {
       return {
         id: event.id,
@@ -158,11 +158,24 @@ export class NostrService {
     const events: Event[] = await this.relay.list([filter]);
     console.log(events)
 
-    let result = 0;
+    // Create a map of users to their latest vote events
+    const latestVotes: { [key: string]: Event } = {};
     events.forEach(e => {
-      if(e.content === '+') result++;
-      else if(e.content === '-') result--;
-    })
+      if (e.content === '+' || e.content === '-') {
+        const existingVote = latestVotes[e.pubkey];
+        if (!existingVote || existingVote.created_at < e.created_at) {
+          latestVotes[e.pubkey] = e;
+        }
+      }
+    });
+
+    // Count the votes for each user
+    let result = 0;
+    Object.values(latestVotes).forEach(e => {
+      if (e.content === '+') result++;
+      else if (e.content === '-') result--;
+    });
+
     return result;
   }
 
@@ -178,12 +191,12 @@ export class NostrService {
     return events.flatMap((event: Event) => {
       let posts: Answer[] = []
       // workaround for not being able to filter by multiple #e tags (topicId + root/reply)
-      if(!event.tags.some((subArr) => subArr[0] === 'p')) {
+      if (!event.tags.some((subArr) => subArr[0] === 'p')) {
         const post: Answer = {
           ...event,
           message: event.content,
           vote: 0
-         }
+        }
         posts.push(post);
       }
       return posts;
@@ -229,7 +242,7 @@ export class NostrService {
     return question;
   }
 
-  
+
   async deleteEvents(eventId: string): Promise<void> {
     const event: EventTemplate = {
       kind: 5,
