@@ -1,13 +1,14 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBolt, faChevronDown, faChevronLeft, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { Answer, Question } from '../../models/model';
+import { Answer, Question, Tip } from '../../models/model';
 import { NostrService } from '../../services/nostr.service';
 
 @Component({
   selector: 'app-question',
   templateUrl: './question.component.html',
-  styleUrls: ['./question.component.scss']
+  styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent implements OnInit {
 
@@ -20,6 +21,11 @@ export class QuestionComponent implements OnInit {
   question: Question;
   answers: Answer[] = [];
   answer: string = "";
+
+  tip: Tip = {
+    answer: undefined,
+    amount: 100
+  }
 
   constructor(private route: ActivatedRoute,
     private nostrService: NostrService) { }
@@ -43,6 +49,18 @@ export class QuestionComponent implements OnInit {
       this.answer = ''
       this.listAnswers()
     })
+  }
+
+  sendTip(answer: Answer, amount: number) {
+    this.tip.answer = undefined;
+  }
+
+  toggleTip(answer: Answer) {
+    if(this.tip.answer === answer) {
+      this.tip.answer = undefined
+    } else {
+      this.tip.answer = answer
+    }
   }
 
   private async listAnswers() {

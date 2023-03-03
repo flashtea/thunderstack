@@ -19,3 +19,8 @@ export interface Answer extends Event {
 export interface Comment extends Event {
     message: string;
 }
+
+export interface Tip {
+    answer?: Answer;
+    amount: number;
+}

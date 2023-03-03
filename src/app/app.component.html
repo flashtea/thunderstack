@@ -13,8 +13,10 @@
 </nav>
 
 <!-- Post List and Footer Wrapper -->
-<div class="container mx-auto flex-1 mt-14 overflow-y-scroll" style="height: calc(100vh - 56px); overflow-x: hidden;">
-  <router-outlet></router-outlet>
+<div class="flex-1 mt-14 overflow-y-scroll" style="height: calc(100vh - 56px); overflow-x: hidden;">
+  <div class="md:px-12 lg:px-24">
+    <router-outlet></router-outlet>
+  </div>
   <!-- Footer -->
   <footer class="bg-white dark:bg-slate-900 p-4 text-center sticky top-[100vh] border-t-[1px] border-slate-200 dark:border-slate-800">
     &copy; {{currentYear}} ZapStack
