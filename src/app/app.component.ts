@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { Profile } from './models/model';
+import { NostrService } from './services/nostr.service';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,19 @@ export class AppComponent {
 
   isDarkMode: boolean = false;
 
+  loggedInUser?: Profile;
+
+  constructor(private nostrService: NostrService) {}
+
   ngOnInit() {
     this.isDarkMode = localStorage.getItem('darkMode') === 'true';
     this.setDarkMode(this.isDarkMode);
+
+    this.nostrService.getLoggedInUser().subscribe(res => {
+      this.loggedInUser = res;
+    })
+
+
   }
 
   setDarkMode(isDarkMode: boolean) {

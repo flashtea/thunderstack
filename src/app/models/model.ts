@@ -1,26 +1,63 @@
 
-export interface Event {
-    id?: string;
+export class Event {
+    id: string;
     tags?: string[][];
-    pubkey?: string;
+    pubkey: string;
 }
 
-export interface Question extends Event {
+export class Question extends Event {
     title: string;
     message: string;
     picture?: string;
 }
 
-export interface Answer extends Event {
+export class Answer extends Event {
     message: string;
     vote: number;
+
+    zaps?: number;
+    profile?: Profile;
 }
 
-export interface Comment extends Event {
+export class Comment extends Event {
     message: string;
 }
 
-export interface Tip {
+export class Tip {
     answer?: Answer;
     amount: number;
+    invoiceCode?: string
 }
+
+export class Profile {
+    name: string;
+    about: string;
+    picture?: string;
+    nip05: string;
+    lud06: string;
+    lud16: string;
+}
+
+
+export class PayRequestResponse {
+    status: string;
+    tag: string;
+    commentAllowed: number;
+    callback: string;
+    metadata: string;
+    minSendable: number;
+    maxSendable: number;
+    payerData: PayerData;
+    nostrPubkey: string;
+    allowsNostr: boolean;
+  }
+  
+  export class PayerData {
+    name: PayerDataItem;
+    email: PayerDataItem;
+  }
+  
+  export class PayerDataItem {
+    mandatory: boolean;
+  }
+  

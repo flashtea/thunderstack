@@ -4,8 +4,11 @@
   <div class="flex items-center font-semibold text-sm dark:text-gray-200">
     <a routerLink="home" class="mr-4 hover:text-gray-400 dark:hover:text-gray-300">Home</a>
     <a routerLink="create-question" class="mr-4 hover:text-gray-400 dark:hover:text-gray-300">Create Question</a>
-    <a routerLink="profile" class="mr-4 hover:text-gray-400 dark:hover:text-gray-300">Profile</a>
-    <button class="focus:outline-none mr-4 w-4 hover:text-gray-400 dark:hover:text-gray-300" (click)="toggleDarkMode()">
+    <div class="flex items-center mr-6">
+        <a routerLink="profile" class="hover:text-gray-400 dark:hover:text-gray-300 mr-2">{{ loggedInUser?.name || 'Anonymous' }}</a>
+        <img [src]="loggedInUser?.picture || '/assets/images/user-placeholder.png'" class="w-6 h-6 rounded-full" alt="Profile Picture">
+    </div>
+    <button class="focus:outline-none w-4 hover:text-gray-400 dark:hover:text-gray-300" (click)="toggleDarkMode()">
       <fa-icon *ngIf="!isDarkMode" [icon]="faMoon"></fa-icon>
       <fa-icon *ngIf="isDarkMode" [icon]="faSun"></fa-icon>
     </button>

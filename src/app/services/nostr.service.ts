@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Event, Filter, Relay, relayInit, EventTemplate, finishEvent } from 'nostr-tools';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Answer, Question, Comment } from '../models/model';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { Answer, Question, Comment, Profile } from '../models/model';
 import { KeyManagementService } from './key.service';
 
 @Injectable({
@@ -10,15 +10,20 @@ import { KeyManagementService } from './key.service';
 export class NostrService {
   private relay: Relay;
   private connected = new BehaviorSubject<boolean>(false);
+  private loggedInUser = new ReplaySubject<Profile>();
 
   private static ZAPSTACK_TAG = "zapstack_test";
 
   constructor(private keyManagementService: KeyManagementService) {
-    this.connectRelay('wss://spore.ws')
+    this.connectRelay('wss://relay.damus.io')
   }
 
   isConnected(): Observable<boolean> {
     return this.connected.asObservable();
+  }
+
+  getLoggedInUser(): Observable<Profile> {
+    return this.loggedInUser.asObservable();
   }
 
   async connectRelay(url: string) {
@@ -34,7 +39,11 @@ export class NostrService {
 
     this.relay.on('connect', () => {
       console.log('Connected to relay at', url)
-      this.connected.next(true);
+      this.getProfile(this.keyManagementService.getPubKey()).then(res => {
+        this.loggedInUser.next(res)
+      })
+      this.connected.next(true)
+
     })
 
     this.relay.on('disconnect', () => {
@@ -84,11 +93,11 @@ export class NostrService {
     };
 
     const events: Event[] = await this.relay.list([filter]);
-    console.log(events);
 
     return events.map((event: Event) => {
       return {
         id: event.id,
+        pubkey: event.pubkey,
         title: JSON.parse(event.content).name,
         message: JSON.parse(event.content).about,
       };
@@ -148,6 +157,24 @@ export class NostrService {
     return this.publishEvent(signedEvent);
   }
 
+  getZapRequest(answerId: string, receiverPubKey: string, amount: number) {
+    const event: EventTemplate = {
+      kind: 9734,
+      created_at: Math.round(Date.now() / 1000),
+      tags: [
+        ['e', answerId],
+        ['p', receiverPubKey],
+        ['amount', amount.toString()],
+        ['relays', this.relay.url]
+      ],
+      content: '',
+    }
+
+    const finishedEvent = finishEvent(event, this.keyManagementService.getPrivKey());
+    const eventString = JSON.stringify(finishedEvent)
+    return encodeURIComponent(eventString);
+  }
+
   async getVoteResult(answerId: string): Promise<number> {
     const filter: Filter = {
       kinds: [7],
@@ -156,7 +183,6 @@ export class NostrService {
     };
 
     const events: Event[] = await this.relay.list([filter]);
-    console.log(events)
 
     // Create a map of users to their latest vote events
     const latestVotes: { [key: string]: Event } = {};
@@ -179,6 +205,50 @@ export class NostrService {
     return result;
   }
 
+  async getZaps(answerId: string): Promise<number> {
+    const filter: Filter = {
+      kinds: [9735],
+      '#e': [answerId]
+    };
+
+    const events: Event[] = await this.relay.list([filter]);
+
+    const zapSum = events.flatMap(e => {
+      const desc = this.getTag(e.tags, 'description')
+      if (desc) {
+        const zapRequest = JSON.parse(desc)
+        const amount = this.getTag(zapRequest.tags, 'amount')
+        return amount ? Number(amount) / 1000 : 0
+      }
+      return 0
+    }).reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+    return zapSum;
+  }
+
+  async waitForZap(answerId: string, invoice: string): Promise<void> {
+    const filter: Filter = {
+      kinds: [9735],
+      '#e': [answerId]
+    };
+
+    return new Promise((resolve) => {
+      const sub = this.relay.sub([filter]);
+      sub.on('event', (event: Event) => {
+        const bolt11Tag = this.getTag(event.tags, 'bolt11')
+        if (bolt11Tag && bolt11Tag == invoice) {
+          console.log('we got the event we wanted:', event)
+          resolve();
+        }
+      })
+    })
+  }
+
+  getTag(tags: string[][], tagName: string): string | undefined {
+    const tag = tags.find((t) => t[0] === tagName);
+    return tag ? tag[1] : undefined;
+  }
+
   async listAnswers(topicId: string): Promise<Answer[]> {
     const filter: Filter = {
       kinds: [42],
@@ -187,7 +257,7 @@ export class NostrService {
     };
 
     const events: Event[] = await this.relay.list([filter]);
-    console.log(events)
+
     return events.flatMap((event: Event) => {
       let posts: Answer[] = []
       // workaround for not being able to filter by multiple #e tags (topicId + root/reply)
@@ -215,6 +285,7 @@ export class NostrService {
     return events.map((event: Event) => {
       const post: Comment = {
         id: event.id,
+        pubkey: event.pubkey,
         message: event.content
       }
       return post;
@@ -232,10 +303,10 @@ export class NostrService {
     if (!event) {
       throw new Error(`Question with id ${questionId} not found`);
     }
-    console.log(event)
 
     const question: Question = {
       id: event.id,
+      pubkey: event.pubkey,
       title: JSON.parse(event.content).name,
       message: JSON.parse(event.content).about,
     }
@@ -282,6 +353,39 @@ export class NostrService {
     answer.id = event.id;
     answer.tags = event.tags;
     return answer;
+  }
+
+  async getProfile(pubkey: string): Promise<Profile> {
+    const filter: Filter = {
+      kinds: [0],
+      authors: [pubkey],
+      limit: 1
+    };
+
+    const event: Event | null = await this.relay.get(filter)
+
+    if (!event) {
+      throw new Error(`Profile for ${pubkey} not found`);
+    }
+
+    const profile: Profile = JSON.parse(event.content);
+    return profile;
+  }
+
+  async updateProfile(profile: Profile): Promise<string> {
+
+    const event: EventTemplate = {
+      kind: 0,
+      created_at: Math.round(Date.now() / 1000),
+      tags: [
+        ['t', NostrService.ZAPSTACK_TAG]
+      ],
+      content: JSON.stringify(profile)
+    }
+
+    const signedEvent = finishEvent(event, this.keyManagementService.getPrivKey())
+
+    return this.publishEvent(signedEvent);
   }
 
   private publishEvent(signedEvent: Event): Promise<string> {

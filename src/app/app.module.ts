@@ -11,6 +11,7 @@ import { ErrorHandlingComponent } from './error-handling/error-handling.componen
 import { QuestionComponent } from './components/question/question.component';
 import { CreateQuestionComponent } from './components/create-question/create-question.component';
 import { MarkdownModule } from 'ngx-markdown';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { MarkdownModule } from 'ngx-markdown';
     LoginSignupComponent,
     ErrorHandlingComponent,
     QuestionComponent,
-    CreateQuestionComponent
+    CreateQuestionComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
