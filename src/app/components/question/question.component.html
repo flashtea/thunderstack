@@ -26,7 +26,7 @@
         </div>
         <hr class="w-full border-gray-200 dark:border-gray-800 mb-2">
         <div class="flex items-center">
-          <button class="flex items-center" (click)="toggleTip(answer)" *ngIf="answer.profile?.lud16">
+          <button class="flex items-center" (click)="toggleZapDialog(answer)" *ngIf="answer.profile?.lud16">
             <fa-icon [icon]="faBolt" class="text-yellow-500"></fa-icon>
             <span class="ml-2">{{ answer.zaps || 0 }}</span>
           </button>
@@ -35,7 +35,6 @@
             <span class="">{{ answer.profile?.name || 'Anonymous' }}</span>
           </div>
         </div>
-        
       </div>
     </div>
   </div>
@@ -54,45 +53,53 @@
   </div>
 </div>
 
-<div class="fixed inset-0 z-50 flex items-center justify-center w-full h-full" [class.hidden]="!tip.answer">
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 m-6" *ngIf="tip.answer">
+<div class="fixed inset-0 z-50 flex items-center justify-center w-full h-full" [class.hidden]="!zap.answer">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 m-6" *ngIf="zap.answer">
     <div class="font-medium text-lg mb-4">
-      Tip Answer
+      Zap Answer
     </div>
     <div class="text-sm mb-4">
-      How much would you like to tip this answer?
+      How much would you like to zap this answer?
     </div>
     <div class="flex items-center mb-4">
       <input
-        [(ngModel)]="tip.amount"
+        [(ngModel)]="zap.amount"
+        [disabled]="!!zap.invoiceCode"
         type="number"
-        class="w-full dark:bg-gray-700 text-sm mr-4 border-gray-300 rounded-md py-2 px-3 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-200"
+        class="w-full dark:bg-gray-700 text-sm border-gray-300 rounded-md py-2 px-3 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-200"
         placeholder="Enter amount"
         min="1"
-        max="10000"
+        max="10000"/>
+    </div>
+
+    <div *ngIf="zap.invoiceCode" class="text-sm mb-4">
+      Lightning Invoice:
+    </div>
+    <div *ngIf="zap.invoiceCode" class="flex items-center mb-4">
+      <input
+        [(ngModel)]="zap.invoiceCode"
+        type="text"
+        class="w-full dark:bg-gray-700 border-2 text-sm border-gray-300 dark:border-gray-700 rounded-l-md py-2 px-3 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-200"
+        placeholder="Invoice code"
+        readonly
       />
+      <button class="border-gray-300 dark:border-gray-700 border-2 border-l-0 rounded-r-md px-4 py-2 text-sm text-gray-400 hover:text-gray-500 focus:outline-none " (click)="copyToClipboard(zap.invoiceCode)">
+        <fa-icon [icon]="faCopy"></fa-icon>
+      </button>
+    </div>
+    <div [class.invisible]="!dialogMessage" class="text-sm text-gray-500 ml-2 h-4 mb-4 text-center">
+      {{ dialogMessage }}
     </div>
     <div class="flex justify-end">
-      <button
-        *ngIf="!tip.invoiceCode"
-        (click)="sendTip(tip.answer, tip.amount)"
-        class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md px-4 py-2 mr-2"
-      >
-        Send Tip
+      <button *ngIf="!zap.invoiceCode"
+        (click)="sendZap(zap.answer, zap.amount)"
+        class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md px-4 py-2 mr-2 w-full flex-grow">
+        Zap
       </button>
-      <a
-          class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md px-12 py-2 mr-2"
-          *ngIf="tip.invoiceCode"
-          [href]="getLightningLink(tip.invoiceCode)"
-          target="_blank"
-          rel="noopener"
-        >
-          Pay
-      </a>
+      <a #lightningLink href="#" style="visibility: hidden;"></a>
       <button
-        (click)="toggleTip(tip.answer)"
-        class="text-yellow-500 hover:text-yellow-600 mr-4"
-      >
+        (click)="toggleZapDialog(zap.answer)"
+        class="text-yellow-500 hover:text-yellow-600 py-2 border-yellow-600 rounded-md border-2 w-full flex-grow">
         Cancel
       </button>
     </div>

@@ -23,19 +23,19 @@ export class Comment extends Event {
     message: string;
 }
 
-export class Tip {
+export class Zap {
     answer?: Answer;
     amount: number;
-    invoiceCode?: string
+    invoiceCode?: string;
 }
 
 export class Profile {
-    name: string;
-    about: string;
+    name?: string;
+    about?: string;
     picture?: string;
-    nip05: string;
-    lud06: string;
-    lud16: string;
+    nip05?: string;
+    lud06?: string;
+    lud16?: string;
 }
 
 

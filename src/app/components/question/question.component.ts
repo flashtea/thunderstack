@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faBolt, faChevronDown, faChevronLeft, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { Answer, PayRequestResponse, Question, Tip } from '../../models/model';
+import { faBolt, faChevronDown, faChevronLeft, faChevronUp, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { Answer, Question, Zap } from '../../models/model';
+import { LightningService } from '../../services/lightning.service';
 import { NostrService } from '../../services/nostr.service';
 
 @Component({
@@ -16,21 +16,27 @@ export class QuestionComponent implements OnInit {
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
   faBolt = faBolt;
+  faCopy = faCopy;
 
   questionId: string;
   question: Question;
   answers: Answer[] = [];
   answer: string = "";
 
-  tip: Tip = {
+  zap: Zap = {
     answer: undefined,
     amount: 100,
     invoiceCode: undefined
   }
 
+  dialogMessage?: string;
+
+  @ViewChild('lightningLink') 
+  lightningLink!: ElementRef<HTMLAnchorElement>;
+
   constructor(private route: ActivatedRoute,
     private nostrService: NostrService,
-    private domSanitizer: DomSanitizer) { }
+    private lightningService: LightningService) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -53,64 +59,42 @@ export class QuestionComponent implements OnInit {
     })
   }
 
-  async sendZap(answer: Answer, amountMSat: number): Promise<string> {
-    const amountSat = amountMSat * 1000;
-    if (answer.profile?.lud16) {
-      // console.log(decodelnurl(answer.profile.lud06))
-      const addressArr = answer.profile.lud16.split('@');
-
-      // Must only have 2 fields (username and domain name)
-      if (addressArr.length !== 2) {
-        throw new Error('Invalid internet identifier format.');
-      }
-
-      const [username, domain] = addressArr;
-
-      // Must only have 2 fields (username and domain name)
-      if (addressArr[1].indexOf('.') === -1) {
-        throw new Error('Invalid internet identifier format.');
-      }
-
-      const url = `https://${domain}/.well-known/lnurlp/${username}`
-      const res: PayRequestResponse = await fetch(url).then(r => r.json())
-
-      const zapRequest = this.nostrService.getZapRequest(answer.id, answer.pubkey, amountSat)
-      
-      const callbackUrl = `${res.callback}?amount=${amountSat}&nostr=${zapRequest}`
-      const response = await fetch(callbackUrl);
-      const invoice = await response.json();
-      console.log(invoice.pr)
-      return invoice.pr;
-    } else if (answer.profile?.lud06) {
-      return answer.profile?.lud06
-    }
-    return ""; 
-  }
-
-  async sendTip(answer: Answer, amount: number) {
+  async sendZap(answer: Answer, amount: number) {
     
-    this.tip.invoiceCode = await this.sendZap(answer, amount)
-    this.nostrService.waitForZap(answer.id, this.tip.invoiceCode).then(() => {
-      this.tip.answer = undefined
-      this.tip.invoiceCode = undefined
+    this.zap.invoiceCode = await this.lightningService.generateZapInvoice(answer, amount)
+    this.triggerPaymentLink(this.zap.invoiceCode);
+
+    this.nostrService.waitForZap(answer.id, this.zap.invoiceCode).then(() => {
+      this.zap.answer = undefined
+      this.zap.invoiceCode = undefined
       this.listAnswers()
     })
   }
 
-  getLightningLink(invoice: string) {
-    return this.domSanitizer.bypassSecurityTrustUrl("lightning:" + invoice)
+  private triggerPaymentLink(invoiceCode: string) {
+    this.lightningLink.nativeElement.href = this.getLightningLink(invoiceCode);
+    this.lightningLink.nativeElement.click();
   }
 
-  toggleTip(answer: Answer) {
-    if (this.tip.answer === answer) {
-      this.tip.answer = undefined
+  getLightningLink(invoice: string) {
+    return "lightning:" + invoice;
+  }
+
+  toggleZapDialog(answer: Answer) {
+    if (this.zap.answer === answer) {
+      this.zap.answer = undefined
     } else {
-      this.tip.answer = answer
+      this.zap.answer = answer
     }
   }
 
   copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).then(() => {
+      this.dialogMessage = "Copied Invoice to Clipboard!";
+      setTimeout(() => {
+        this.dialogMessage = undefined;
+      }, 3000);
+    });
   }
 
   private async listAnswers() {
