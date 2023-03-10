@@ -12,6 +12,7 @@ import { QuestionComponent } from './components/question/question.component';
 import { CreateQuestionComponent } from './components/create-question/create-question.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { ProfileComponent } from './components/profile/profile.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     AppRoutingModule,
     FormsModule,
     FontAwesomeModule,
+    HttpClientModule,
     MarkdownModule.forRoot()
   ],
   providers: [],

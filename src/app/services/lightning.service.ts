@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { decodelnurl, getDomain } from 'js-lnurl';
-import { Answer, PayRequestResponse } from '../models/model';
+import { firstValueFrom } from 'rxjs';
+import { Answer, InvoiceResponseObject, PayRequestResponse } from '../models/model';
 import { NostrService } from './nostr.service';
 
 @Injectable({
@@ -8,23 +10,23 @@ import { NostrService } from './nostr.service';
 })
 export class LightningService {
 
-  constructor(private nostrService: NostrService) { }
+  constructor(private nostrService: NostrService,
+    private http: HttpClient) { }
 
   async generateZapInvoice(answer: Answer, amountMSat: number): Promise<string> {
     const amountSat = amountMSat * 1000;
   
     const [username, domain] = this.getUsernameAndDomain(answer.profile);
   
-    const url = `https://${domain}/.well-known/lnurlp/${username}`
-    const res: PayRequestResponse = await fetch(url).then(r => r.json())
+    const lnurl = `https://${domain}/.well-known/lnurlp/${username}`
+    const payRequestResponse = await firstValueFrom(this.http.get<PayRequestResponse>(lnurl))
   
     const zapRequest = this.nostrService.getZapRequest(answer.id, answer.pubkey, amountSat)
   
-    const callbackUrl = `${res.callback}?amount=${amountSat}&nostr=${zapRequest}`
-    const response = await fetch(callbackUrl);
-    const invoice = await response.json();
+    const callbackUrl = `${payRequestResponse.callback}?amount=${amountSat}&nostr=${zapRequest}`
+    const invoiceResponse = await firstValueFrom(this.http.get<InvoiceResponseObject>(callbackUrl))
   
-    return invoice.pr;
+    return invoiceResponse.pr;
   }
   
   private getUsernameAndDomain(profile: any): [string, string] {

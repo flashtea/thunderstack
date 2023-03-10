@@ -60,4 +60,12 @@ export class PayRequestResponse {
   export class PayerDataItem {
     mandatory: boolean;
   }
+
+  export interface InvoiceResponseObject {
+    pr: string;
+    status: string;
+    verify: string;
+    // successAction: SuccessAction;
+    // routes: any[];
+  }
   
