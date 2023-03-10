@@ -41,7 +41,10 @@ export class KeyManagementService {
   }
 
   getPubKey(): string {
-    return getPublicKey(this.getPrivKey());
+    if(this.getPrivKey()) {
+      return getPublicKey(this.getPrivKey());
+    }
+    return '';
   }
 
   hexToNsec(hexKey: string) {

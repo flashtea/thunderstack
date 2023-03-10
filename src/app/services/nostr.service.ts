@@ -39,11 +39,8 @@ export class NostrService {
 
     this.relay.on('connect', () => {
       console.log('Connected to relay at', url)
-      this.getProfile(this.keyManagementService.getPubKey()).then(res => {
-        this.loggedInUser.next(res)
-      })
+      this.loadProfile();
       this.connected.next(true)
-
     })
 
     this.relay.on('disconnect', () => {
@@ -58,6 +55,14 @@ export class NostrService {
     })
 
     await this.relay.connect();
+  }
+
+  loadProfile() {
+    if (this.keyManagementService.getPubKey()) {
+      this.getProfile(this.keyManagementService.getPubKey()).then(res => {
+        this.loggedInUser.next(res);
+      });
+    }
   }
 
   createOrUpdateQuestion(name: string, about: string, picture: string, questionId?: string): Promise<string> {
