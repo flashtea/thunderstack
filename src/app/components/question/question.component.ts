@@ -78,8 +78,8 @@ export class QuestionComponent implements OnInit {
     })
   }
 
-  private triggerPaymentLink(invoiceCode: string) {
-    const lightningLink = "lightning:" + invoiceCode;
+  private triggerPaymentLink(lightningCode: string) {
+    const lightningLink = "lightning:" + lightningCode;
     this.lightningLink.nativeElement.href = lightningLink ;
     this.lightningLink.nativeElement.click();
   }

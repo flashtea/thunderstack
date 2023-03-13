@@ -1,0 +1,75 @@
+<div class="container mx-auto">
+  <h1 class="text-2xl font-bold mb-4">Profile</h1>
+
+  <div class="bg-white dark:bg-slate-800/25 p-4 shadow-md rounded-lg">
+    <form #profileForm="ngForm" (ngSubmit)="onSave()">
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="name">
+          Name
+        </label>
+        <input
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          type="text"
+          id="name"
+          [(ngModel)]="profile.name"
+          name="name" required/>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="about">
+          About
+        </label>
+        <textarea
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          id="about"
+          [(ngModel)]="profile.about"
+          name="about"></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="nip05">
+          NIP-05 Field
+        </label>
+        <input
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          type="text"
+          id="nip05"
+          [(ngModel)]="profile.nip05"
+          name="nip05"/>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="lud16">
+          LUD-16 Field
+        </label>
+        <input
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          type="text"
+          id="lud16"
+          [(ngModel)]="profile.lud16"
+          name="lud16"/>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="lud06">
+          LUD-06 Field
+        </label>
+        <input
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          type="text"
+          id="lud06"
+          [(ngModel)]="profile.lud06"
+          name="lud06"/>
+      </div>
+
+      <div class="flex justify-between">
+        <button
+          class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-400"
+          type="submit"
+          [disabled]="profileForm.invalid">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

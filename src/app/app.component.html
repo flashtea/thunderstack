@@ -1,23 +1,23 @@
 <!-- Navigation Bar -->
-<nav class="bg-white dark:bg-slate-900 p-4 flex items-center justify-between fixed top-0 w-full z-10 border-b-[1px] border-slate-200 dark:border-slate-800">
+<nav class="px-4 md:px-14 lg:px-32 bg-white dark:bg-slate-900 py-4 fixed top-0 w-full z-10 border-b-[1px] border-slate-200 dark:border-slate-800">
+  <div class="container mx-auto flex items-center justify-between">
   <a routerLink="" class="font-medium text-slate-900 dark:text-slate-200">ZapStack</a>
   <div class="flex items-center font-semibold text-sm dark:text-gray-200">
-    <a routerLink="home" class="mr-4 hover:text-gray-400 dark:hover:text-gray-300">Home</a>
-    <a routerLink="create-question" class="mr-4 hover:text-gray-400 dark:hover:text-gray-300">Create Question</a>
-    <div class="flex items-center mr-6">
-        <a routerLink="profile" class="hover:text-gray-400 dark:hover:text-gray-300 mr-2">{{ loggedInUser?.name || 'Anonymous' }}</a>
-        <img [src]="loggedInUser?.picture || '/assets/images/user-placeholder.png'" class="w-6 h-6 rounded-full" alt="Profile Picture">
+    <div class="flex items-center mr-4">
+        <a routerLink="edit-profile" class="hover:text-gray-400 dark:hover:text-gray-300 mr-2">
+          <img [src]="loggedInUser?.picture || '/assets/images/user-placeholder.png'" class="w-8 h-8 rounded-full" alt="Profile Picture">
+        </a>
     </div>
-    <button class="focus:outline-none w-4 hover:text-gray-400 dark:hover:text-gray-300" (click)="toggleDarkMode()">
+    <button class="focus:outline-none w-4 hover:text-gray-400 dark:hover:text-gray-300 mr-6" (click)="toggleDarkMode()">
       <fa-icon *ngIf="!isDarkMode" [icon]="faMoon"></fa-icon>
       <fa-icon *ngIf="isDarkMode" [icon]="faSun"></fa-icon>
     </button>
   </div>
+</div>
 </nav>
 
-<!-- Post List and Footer Wrapper -->
 <div class="flex-1 mt-14 overflow-y-scroll" style="height: calc(100vh - 56px); overflow-x: hidden;">
-  <div class="md:px-12 lg:px-24">
+  <div class="px-4 md:px-14 lg:px-32 mt-6">
     <router-outlet></router-outlet>
   </div>
 </div>

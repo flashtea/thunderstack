@@ -1,75 +1,40 @@
-<div class="container mx-auto mt-8 px-8">
-  <h1 class="text-2xl font-bold mb-4">Profile</h1>
+<div class="container mx-auto lg:px-40">
+  <div class="flex items-center mb-6">
+    <img src="{{ userProfile.picture || '/assets/images/user-placeholder.png' }}" class="w-16 h-16 rounded-full mr-4" alt="Profile Picture">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-200">{{ userProfile.name || 'Anonymous' }}</h1>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-start">
+    <button class="focus:outline-none flex items-center mb-2" *ngIf="userProfile?.lud06 || userProfile?.lud16">
+      <a [href]="getLightningLink(userProfile)" class="text-sm mr-2">
+        <fa-icon class="mr-2" [icon]="faBolt"></fa-icon>
+        <span class="text-sm">Tip User</span>
+      </a>
+    </button>
+    <button class="focus:outline-none flex items-center mb-2">
+      <fa-icon class="mr-2" [icon]="faUserPlus"></fa-icon>
+      <span class="text-sm">Follow User</span>
+    </button>
+    <div class="flex items-center" *ngIf="userProfile?.nip05">
+      <a href="lightning:{{ userProfile.nip05 }}" class="text-sm mr-2">{{ userProfile.nip05 }}</a>
+      <fa-icon [icon]="faCheckCircle" class="text-green-500" *ngIf="userProfile?.nip05"></fa-icon>
+    </div>
+  </div>
 
   <div class="bg-white dark:bg-slate-800/25 p-4 shadow-md rounded-lg">
-    <form #profileForm="ngForm" (ngSubmit)="onSave()">
-      <div class="mb-4">
-        <label class="block font-bold mb-2" for="name">
-          Name
-        </label>
-        <input
-          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
-          type="text"
-          id="name"
-          [(ngModel)]="profile.name"
-          name="name" required/>
-      </div>
-
-      <div class="mb-4">
-        <label class="block font-bold mb-2" for="about">
-          About
-        </label>
-        <textarea
-          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
-          id="about"
-          [(ngModel)]="profile.about"
-          name="about"></textarea>
-      </div>
-
-      <div class="mb-4">
-        <label class="block font-bold mb-2" for="nip05">
-          NIP-05 Field
-        </label>
-        <input
-          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
-          type="text"
-          id="nip05"
-          [(ngModel)]="profile.nip05"
-          name="nip05"/>
-      </div>
-
-      <div class="mb-4">
-        <label class="block font-bold mb-2" for="lud16">
-          LUD-16 Field
-        </label>
-        <input
-          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
-          type="text"
-          id="lud16"
-          [(ngModel)]="profile.lud16"
-          name="lud16"/>
-      </div>
-
-      <div class="mb-4">
-        <label class="block font-bold mb-2" for="lud06">
-          LUD-06 Field
-        </label>
-        <input
-          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
-          type="text"
-          id="lud06"
-          [(ngModel)]="profile.lud06"
-          name="lud06"/>
-      </div>
-
-      <div class="flex justify-between">
-        <button
-          class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-400"
-          type="submit"
-          [disabled]="profileForm.invalid">
-          Save
-        </button>
-      </div>
-    </form>
+    <p class="text-gray-600 dark:text-gray-300">{{ userProfile.about || 'No bio provided' }}</p>
   </div>
+
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-200 mb-4">Latest Posts</h2>
+    <div class="bg-white dark:bg-slate-800/25 p-4 shadow-md rounded-lg" *ngFor="let post of latestPosts">
+      <!-- <h3 class="text-lg font-semibold mb-2">
+        <a [routerLink]="['/post', post.id]" class="text-gray-800 dark:text-gray-100">{{ post. }}</a>
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300">{{ post.message }}</p> -->
+    </div>
+  </div>
+
 </div>

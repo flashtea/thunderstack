@@ -29,7 +29,7 @@ export class Zap {
     invoiceCode?: string;
 }
 
-export class Profile {
+export class Profile extends Event {
     name?: string;
     about?: string;
     picture?: string;

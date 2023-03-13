@@ -1,4 +1,4 @@
-<div class="container mx-auto px-8 pt-4" *ngIf="question?.title">
+<div class="container mx-auto" *ngIf="question?.title">
   <div class="flex items-center mb-4">
     <a [routerLink]="['/home']" class="flex items-center m-l-0 mr-4">
       <fa-icon [icon]="faChevronLeft" class="m-t-2"></fa-icon>
@@ -26,14 +26,16 @@
         </div>
         <hr class="w-full border-gray-200 dark:border-gray-800 mb-2">
         <div class="flex items-center">
-          <button class="flex items-center" (click)="toggleZapDialog(answer)" *ngIf="answer.profile?.lud16">
+          <button class="flex items-center" (click)="toggleZapDialog(answer)" *ngIf="answer.profile?.lud16 || answer.profile?.lud06">
             <fa-icon [icon]="faBolt" class="text-yellow-500"></fa-icon>
             <span class="ml-2">{{ answer.zaps || 0 }}</span>
           </button>
-          <div class="flex items-center ml-auto">
-            <img src="{{ answer.profile?.picture || '/assets/images/user-placeholder.png' }}" class="w-6 h-6 rounded-full mr-2" alt="profile picture">
-            <span class="">{{ answer.profile?.name || 'Anonymous' }}</span>
-          </div>
+          <a [routerLink]="['/profile', answer.profile?.id]" class="ml-auto">
+            <div class="flex items-center">
+              <img src="{{ answer.profile?.picture || '/assets/images/user-placeholder.png' }}" class="w-6 h-6 rounded-full mr-2" alt="profile picture">
+              <span class="">{{ answer.profile?.name || 'Anonymous' }}</span>
+            </div>
+          </a>
         </div>
       </div>
     </div>

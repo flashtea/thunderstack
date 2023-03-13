@@ -374,6 +374,8 @@ export class NostrService {
     }
 
     const profile: Profile = JSON.parse(event.content);
+    profile.id = event.id
+    profile.pubkey = event.pubkey
     return profile;
   }
 

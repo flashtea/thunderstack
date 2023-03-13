@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { decodelnurl, getDomain } from 'js-lnurl';
 import { firstValueFrom } from 'rxjs';
-import { Answer, InvoiceResponseObject, PayRequestResponse } from '../models/model';
+import { Answer, InvoiceResponseObject, PayRequestResponse, Profile } from '../models/model';
 import { NostrService } from './nostr.service';
 
 @Injectable({
@@ -11,7 +12,8 @@ import { NostrService } from './nostr.service';
 export class LightningService {
 
   constructor(private nostrService: NostrService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private domSanitizer: DomSanitizer) { }
 
   async generateZapInvoice(answer: Answer, amountMSat: number): Promise<string> {
     const amountSat = amountMSat * 1000;
@@ -60,6 +62,13 @@ export class LightningService {
   private getUsernameFromLnurl(lnurl: string): string {
     const match = lnurl.match(/\/([^/]+)\.json$/);
     return match ? match[1] : '';
+  }
+
+  getSanitizedLightningLink(profile: Profile): SafeUrl {
+    if(!profile.lud16 && !profile.lud06) return ''
+
+    let link = 'lightning:' + (profile.lud06 || profile.lud06)
+    return this.domSanitizer.bypassSecurityTrustUrl(link)
   }
 
 }

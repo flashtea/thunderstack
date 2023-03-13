@@ -13,6 +13,7 @@ import { CreateQuestionComponent } from './components/create-question/create-que
 import { MarkdownModule } from 'ngx-markdown';
 import { ProfileComponent } from './components/profile/profile.component';
 import { HttpClientModule } from '@angular/common/http';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { HttpClientModule } from '@angular/common/http';
     ErrorHandlingComponent,
     QuestionComponent,
     CreateQuestionComponent,
-    ProfileComponent
+    ProfileComponent,
+    EditProfileComponent
   ],
   imports: [
     BrowserModule,
