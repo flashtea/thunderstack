@@ -15,22 +15,36 @@ export class LightningService {
     private http: HttpClient,
     private domSanitizer: DomSanitizer) { }
 
-  async generateZapInvoice(answer: Answer, amountMSat: number): Promise<string> {
-    const amountSat = amountMSat * 1000;
-  
+  async generateZapInvoice(answer: Answer, amountSat: number): Promise<string> {
+
+    if(!answer.profile || (!answer.profile.lud16 && !answer.profile.lud06)) {
+      return ''
+    }
+
+    const amountMSat = amountSat * 1000;
     const [username, domain] = this.getUsernameAndDomain(answer.profile);
-  
     const lnurl = `https://${domain}/.well-known/lnurlp/${username}`
     const payRequestResponse = await firstValueFrom(this.http.get<PayRequestResponse>(lnurl))
+
+    if(!payRequestResponse) {
+      return answer.profile.lud16 || answer.profile.lud06 || '';
+    }
   
-    const zapRequest = this.nostrService.getZapRequest(answer.id, answer.pubkey, amountSat)
-  
-    const callbackUrl = `${payRequestResponse.callback}?amount=${amountSat}&nostr=${zapRequest}`
-    const invoiceResponse = await firstValueFrom(this.http.get<InvoiceResponseObject>(callbackUrl))
-  
+    let callbackUrl = this.generateCallbackUrl(payRequestResponse, amountMSat, answer);
+
+    const invoiceResponse = await firstValueFrom(this.http.get<InvoiceResponseObject>(callbackUrl))  
     return invoiceResponse.pr;
   }
   
+  private generateCallbackUrl(payRequestResponse: PayRequestResponse, amountMSat: number, answer: Answer) {
+    let callbackUrl = `${payRequestResponse.callback}?amount=${amountMSat}`;
+    if (!payRequestResponse.allowsNostr) {
+      const zapRequest = this.nostrService.getZapRequest(answer.id, answer.pubkey, amountMSat);
+      callbackUrl += `&nostr=${zapRequest}`;
+    }
+    return callbackUrl;
+  }
+
   private getUsernameAndDomain(profile: any): [string, string] {
     let username = '';
     let domain = '';
