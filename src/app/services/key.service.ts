@@ -17,7 +17,7 @@ export class KeyManagementService {
   }
 
   setPrivKey(privKey: string): void {
-    if(privKey.startsWith('nsec')) {
+    if (privKey.startsWith('nsec')) {
       privKey = this.nsecToHex(privKey)
     }
 
@@ -29,7 +29,7 @@ export class KeyManagementService {
   }
 
   isValidPrivateKey(privKey: string) {
-    if(privKey.startsWith('nsec')) {
+    if (privKey.startsWith('nsec')) {
       privKey = this.nsecToHex(privKey)
     }
 
@@ -41,24 +41,28 @@ export class KeyManagementService {
   }
 
   getPubKey(): string {
-    if(this.getPrivKey()) {
+    if (this.getPrivKey()) {
       return getPublicKey(this.getPrivKey());
     }
     return '';
   }
 
-  hexToNsec(hexKey: string) {
+  private hexToNsec(hexKey: string) {
     const buf = Buffer.from(hexKey, 'hex');
     const words = bech32.toWords(buf);
     return bech32.encode('nsec', words);
   }
 
-  nsecToHex(nsecKey: string) {
-    const { prefix, words } = bech32.decode(nsecKey);
-    if (prefix !== 'nsec') {
-      throw new Error('Invalid nsec-prefix format');
+  private nsecToHex(nsecKey: string) {
+    try {
+      const { prefix, words } = bech32.decode(nsecKey);
+      if (prefix !== 'nsec') {
+        throw new Error('Invalid nsec-prefix format');
+      }
+      const buf = Buffer.from(bech32.fromWords(words));
+      return buf.toString('hex');
+    } catch {
+      return ''
     }
-    const buf = Buffer.from(bech32.fromWords(words));
-    return buf.toString('hex');
   }
 }
