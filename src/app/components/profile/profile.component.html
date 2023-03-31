@@ -13,10 +13,10 @@
         <span class="text-sm">Tip User</span>
       </a>
     </button>
-    <button class="focus:outline-none flex items-center mb-2">
+    <!-- <button class="focus:outline-none flex items-center mb-2">
       <fa-icon class="mr-2" [icon]="faUserPlus"></fa-icon>
       <span class="text-sm">Follow User</span>
-    </button>
+    </button> -->
     <div class="flex items-center" *ngIf="userProfile?.nip05">
       <a href="lightning:{{ userProfile.nip05 }}" class="text-sm mr-2">{{ userProfile.nip05 }}</a>
       <fa-icon [icon]="faCheckCircle" class="text-green-500" *ngIf="userProfile?.nip05"></fa-icon>

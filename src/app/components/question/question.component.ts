@@ -87,6 +87,7 @@ export class QuestionComponent implements OnInit {
   toggleZapDialog(answer: Answer) {
     if (this.zap.answer === answer) {
       this.zap.answer = undefined
+      this.zap.invoiceCode = undefined
     } else {
       this.zap.answer = answer
     }
@@ -105,22 +106,25 @@ export class QuestionComponent implements OnInit {
     this.answers = await this.nostrService.listAnswers(this.questionId)
     for (let answer of this.answers) {
       this.updateProfileForAnswer(answer);
-      this.updateVotesForAnswer(answer);
+      this.updateVotesForAnswer(answer).then(() => this.sortAnswersByVoteCount());
       this.updateZapsForAnswer(answer);
     }
-    this.answers.sort((a, b) => b.vote - a.vote)
   }
 
-  private updateProfileForAnswer(answer: Answer) {
-    this.nostrService.getProfile(answer.pubkey).then(res => answer.profile = res);
+  private sortAnswersByVoteCount() {
+    this.answers.sort((a, b) => b.vote - a.vote);
   }
 
-  private updateVotesForAnswer(answer: Answer) {
-    this.nostrService.getVoteResult(answer.id).then(res => answer.vote = res);
+  private updateProfileForAnswer(answer: Answer): Promise<any> {
+    return this.nostrService.getProfile(answer.pubkey).then(res => answer.profile = res);
   }
 
-  private updateZapsForAnswer(answer: Answer) {
-    this.nostrService.getZaps(answer.id).then(res => answer.zaps = res);
+  private updateVotesForAnswer(answer: Answer): Promise<any> {
+    return this.nostrService.getVoteResult(answer.id).then(res => answer.vote = res);
+  }
+
+  private updateZapsForAnswer(answer: Answer): Promise<any> {
+    return this.nostrService.getZaps(answer.id).then(res => answer.zaps = res);
   }
 
 }

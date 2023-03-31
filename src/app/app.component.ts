@@ -16,14 +16,15 @@ export class AppComponent {
 
   currentYear = new Date().getFullYear();
 
-  isDarkMode: boolean = false;
+  isDarkMode: boolean = true;
 
   loggedInUser?: Profile;
 
   constructor(private nostrService: NostrService) {}
 
   ngOnInit() {
-    this.isDarkMode = localStorage.getItem('darkMode') === 'true';
+    const storedDarkMode = localStorage.getItem('darkMode')
+    this.isDarkMode = storedDarkMode ? storedDarkMode === 'true' : true;
     this.setDarkMode(this.isDarkMode);
 
     this.nostrService.getLoggedInUser().subscribe(res => {
