@@ -12,7 +12,7 @@ export class AppComponent {
   
   faMoon = faMoon;
   faSun = faSun;
-  title = 'Zapstack';
+  title = 'Thunderstack';
 
   currentYear = new Date().getFullYear();
 

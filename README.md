@@ -1,4 +1,4 @@
-# ZapStack
+# Thunderstack
 
 A Stackoverflow clone built using Nostr, a decentralized event system.
 

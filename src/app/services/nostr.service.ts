@@ -12,7 +12,7 @@ export class NostrService {
   private connected = new BehaviorSubject<boolean>(false);
   private loggedInUser = new ReplaySubject<Profile>();
 
-  private static ZAPSTACK_TAG = "zapstack_test";
+  private static THUNDERSTACK_TAG = "thunderstack_test";
 
   constructor(private keyManagementService: KeyManagementService) {
     this.connectRelay('wss://relay.damus.io')
@@ -76,7 +76,7 @@ export class NostrService {
       kind: questionId ? 41 : 40,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG],
+        ['t', NostrService.THUNDERSTACK_TAG],
         ['subject', name]
       ],
       content: JSON.stringify(content)
@@ -94,7 +94,7 @@ export class NostrService {
   async listQuestions(): Promise<Question[]> {
     const filter: Filter = {
       kinds: [40],
-      '#t': [NostrService.ZAPSTACK_TAG]
+      '#t': [NostrService.THUNDERSTACK_TAG]
     };
 
     const events: Event[] = await this.relay.list([filter]);
@@ -115,7 +115,7 @@ export class NostrService {
       kind: 42,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG],
+        ['t', NostrService.THUNDERSTACK_TAG],
         ['e', topicId, this.relay.url, 'root']
       ],
       content: message
@@ -132,7 +132,7 @@ export class NostrService {
       kind: 42,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG],
+        ['t', NostrService.THUNDERSTACK_TAG],
         ['e', questionId, this.relay.url, 'reply'],
         ['p', parentId]
       ],
@@ -150,7 +150,7 @@ export class NostrService {
       kind: 7,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG],
+        ['t', NostrService.THUNDERSTACK_TAG],
         ['e', answerId],
         ['p', answerPubKey]
       ],
@@ -183,7 +183,7 @@ export class NostrService {
   async getVoteResult(answerId: string): Promise<number> {
     const filter: Filter = {
       kinds: [7],
-      '#t': [NostrService.ZAPSTACK_TAG],
+      '#t': [NostrService.THUNDERSTACK_TAG],
       '#e': [answerId]
     };
 
@@ -257,7 +257,7 @@ export class NostrService {
   async listAnswers(topicId: string): Promise<Answer[]> {
     const filter: Filter = {
       kinds: [42],
-      '#t': [NostrService.ZAPSTACK_TAG],
+      '#t': [NostrService.THUNDERSTACK_TAG],
       '#e': [topicId] //TODO filter by 'root' Tag
     };
 
@@ -281,7 +281,7 @@ export class NostrService {
   async listComments(postId: string): Promise<Comment[]> {
     const filter: Filter = {
       kinds: [42],
-      '#t': [NostrService.ZAPSTACK_TAG],
+      '#t': [NostrService.THUNDERSTACK_TAG],
       '#p': [postId]
     };
 
@@ -324,7 +324,7 @@ export class NostrService {
       kind: 5,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG],
+        ['t', NostrService.THUNDERSTACK_TAG],
         ['e', eventId]
       ],
       content: ""
@@ -385,7 +385,7 @@ export class NostrService {
       kind: 0,
       created_at: Math.round(Date.now() / 1000),
       tags: [
-        ['t', NostrService.ZAPSTACK_TAG]
+        ['t', NostrService.THUNDERSTACK_TAG]
       ],
       content: JSON.stringify(profile)
     }

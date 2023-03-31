@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "zapstack": {
+    "thunderstack": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "zapstack:build:production"
+              "browserTarget": "thunderstack:build:production"
             },
             "development": {
-              "browserTarget": "zapstack:build:development"
+              "browserTarget": "thunderstack:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "zapstack:build"
+            "browserTarget": "thunderstack:build"
           }
         },
         "test": {
