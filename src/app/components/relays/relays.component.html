@@ -1,0 +1,43 @@
+<div class="container mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Relay Configuration</h1>
+  
+    <table class="w-full text-left table-collapse mb-4">
+      <thead>
+        <tr>
+          <th class="text-xs font-medium p-2 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-100">Relay URL</th>
+          <th class="text-xs font-medium p-2 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-100"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let relay of relays">
+          <td class="p-2 border-t border-gray-200 dark:border-gray-800">{{relay}}</td>
+          <td class="p-2 border-t border-gray-200 dark:border-gray-800">
+            <button (click)="onDelete(relay)" class="text-xs px-2 py-1 rounded-full bg-red-500 text-white hover:bg-red-400">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <form (submit)="onAdd()">
+      <div class="mb-4">
+        <label class="block font-bold mb-2" for="relayUrl">
+          Relay URL
+        </label>
+        <input
+          class="w-full p-2 border-[1px] border-slate-200 dark:border-slate-800 rounded mb-4 bg-white dark:bg-gray-800/25"
+          type="text"
+          id="relayUrl"
+          [(ngModel)]="newRelay"
+          name="relayUrl"
+          required
+        />
+      </div>
+  
+      <div class="flex justify-between">
+        <button class="text-white px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500">
+            Add
+        </button>
+      </div>
+    </form>
+</div>
+    

@@ -12,14 +12,10 @@ export class EditProfileComponent implements OnInit {
   profile: Profile = new Profile();
 
   constructor(private nostrService: NostrService,
-    private keyManagementService: KeyManagementService) {}
+    private keyManagementService: KeyManagementService) { }
 
   ngOnInit() {
-    this.nostrService.isConnected().subscribe(connected => {
-      if(connected) {
-        this.nostrService.getProfile(this.keyManagementService.getPubKey()).then(res => this.profile = res)
-      }
-    })
+    this.nostrService.getProfile(this.keyManagementService.getPubKey()).then(res => this.profile = res)
   }
 
   onSave() {

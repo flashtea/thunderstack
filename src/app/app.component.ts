@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faMoon, faSitemap, faSun } from '@fortawesome/free-solid-svg-icons';
 import { Profile } from './models/model';
 import { NostrService } from './services/nostr.service';
 
@@ -12,6 +13,8 @@ export class AppComponent {
   
   faMoon = faMoon;
   faSun = faSun;
+  faGithub = faGithub;
+  faSitemap = faSitemap;
   title = 'Thunderstack';
 
   currentYear = new Date().getFullYear();

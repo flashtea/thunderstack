@@ -3,20 +3,26 @@
   <div class="container mx-auto flex items-center justify-between">
     <div class="flex items-end">
       <a routerLink="" class="ml-1 font-medium text-slate-900 dark:text-slate-200">
-        <img src="/assets/images/logo_t.png" *ngIf="isDarkMode" class="h-10">
-        <img src="/assets/images/logo_d.png" *ngIf="!isDarkMode" class="h-10">
+        <img src="/assets/images/logo_t.png" *ngIf="isDarkMode" class="h-10" alt="Thunderstack logo">
+        <img src="/assets/images/logo_d.png" *ngIf="!isDarkMode" class="h-10" alt="Thunderstack logo">
       </a>
     </div>
     <div class="flex items-center font-semibold text-sm dark:text-gray-200">
       <div class="flex items-center mr-4">
           <a routerLink="edit-profile" class="hover:text-gray-400 dark:hover:text-gray-300 mr-2">
-            <img [src]="loggedInUser?.picture || '/assets/images/user-placeholder.png'" class="w-8 h-8 rounded-full" alt="Profile Picture">
+            <img [src]="loggedInUser?.picture || '/assets/images/user-placeholder.png'" class="w-6 h-6 rounded-full" alt="Profile Picture">
           </a>
       </div>
+      <a routerLink="relays" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 mr-6">
+        <fa-icon [icon]="faSitemap" class="fa-lg"></fa-icon>
+      </a>
       <button class="focus:outline-none w-4 hover:text-gray-400 dark:hover:text-gray-300 mr-6" (click)="toggleDarkMode()">
-        <fa-icon *ngIf="!isDarkMode" [icon]="faMoon"></fa-icon>
-        <fa-icon *ngIf="isDarkMode" [icon]="faSun"></fa-icon>
+        <fa-icon *ngIf="!isDarkMode" [icon]="faMoon" class="fa-lg"></fa-icon>
+        <fa-icon *ngIf="isDarkMode" [icon]="faSun" class="fa-lg"></fa-icon>
       </button>
+      <a href="https://github.com/flashtea/thunderstack" target="_blank" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 mr-4">
+        <fa-icon [icon]="faGithub" class="fa-lg"></fa-icon>
+      </a>
     </div>
   </div>
 </nav>

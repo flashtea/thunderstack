@@ -13,12 +13,8 @@ export class HomeComponent implements OnInit {
   constructor(private nostr: NostrService) { }
 
   async ngOnInit(): Promise<void> {
-    this.nostr.isConnected().subscribe(connected => {
-      if (connected) {
-        this.nostr.listQuestions().then((questions: Question[]) => {
-          this.questions = questions
-        });
-      }
+    this.nostr.listQuestions().then((questions: Question[]) => {
+      this.questions = questions
     });
   }
 

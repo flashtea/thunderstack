@@ -9,11 +9,13 @@ import { LoginGuard } from './components/login-signup/login.guard';
 import { CreateQuestionComponent } from './components/create-question/create-question.component';
 import { QuestionComponent } from './components/question/question.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { RelaysComponent } from './components/relays/relays.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [LoginGuard] },
   { path: 'create-question', component: CreateQuestionComponent, canActivate: [LoginGuard] },
+  { path: 'relays', component: RelaysComponent, canActivate: [LoginGuard] },
   { path: 'edit-profile', component: EditProfileComponent, canActivate: [LoginGuard] },
   { path: 'profile/:id', component: ProfileComponent, canActivate: [LoginGuard] },
   { path: 'question/:id', component: QuestionComponent, canActivate: [LoginGuard] },
@@ -21,7 +23,6 @@ const routes: Routes = [
   { path: 'error', component: ErrorHandlingComponent },
   { path: '**', redirectTo: 'error' }
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

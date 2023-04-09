@@ -14,6 +14,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ProfileComponent } from './components/profile/profile.component';
 import { HttpClientModule } from '@angular/common/http';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { RelaysComponent } from './components/relays/relays.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
     QuestionComponent,
     CreateQuestionComponent,
     ProfileComponent,
-    EditProfileComponent
+    EditProfileComponent,
+    RelaysComponent
   ],
   imports: [
     BrowserModule,

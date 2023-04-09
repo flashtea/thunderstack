@@ -68,4 +68,15 @@ export class PayRequestResponse {
     // successAction: SuccessAction;
     // routes: any[];
   }
+
+  export class Relay {
+    name: string;
+    url: string;
+  
+    constructor(name: string, url: string) {
+      this.name = name;
+      this.url = url;
+    }
+  }
+  
   

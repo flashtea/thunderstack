@@ -22,14 +22,10 @@ export class ProfileComponent implements OnInit {
 
   constructor(private nostrService: NostrService,
     private keyManagementService: KeyManagementService,
-    private lightningService: LightningService) {}
+    private lightningService: LightningService) { }
 
   ngOnInit() {
-    this.nostrService.isConnected().subscribe(connected => {
-      if(connected) {
-        this.nostrService.getProfile(this.keyManagementService.getPubKey()).then(res => this.userProfile = res)
-      }
-    })
+    this.nostrService.getProfile(this.keyManagementService.getPubKey()).then(res => this.userProfile = res)
   }
 
   onSave() {

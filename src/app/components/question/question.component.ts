@@ -31,7 +31,7 @@ export class QuestionComponent implements OnInit {
 
   dialogMessage?: string;
 
-  @ViewChild('lightningLink') 
+  @ViewChild('lightningLink')
   lightningLink!: ElementRef<HTMLAnchorElement>;
 
   constructor(private route: ActivatedRoute,
@@ -41,14 +41,10 @@ export class QuestionComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.questionId = params['id']
-      this.nostrService.isConnected().subscribe(connected => {
-        if (connected) {
-          this.nostrService.getQuestion(this.questionId).then(question => {
-            this.question = question
-          })
-          this.listAnswers()
-        }
+      this.nostrService.getQuestion(this.questionId).then(question => {
+        this.question = question
       })
+      this.listAnswers()
     })
   }
 
@@ -80,7 +76,7 @@ export class QuestionComponent implements OnInit {
 
   private triggerPaymentLink(lightningCode: string) {
     const lightningLink = "lightning:" + lightningCode;
-    this.lightningLink.nativeElement.href = lightningLink ;
+    this.lightningLink.nativeElement.href = lightningLink;
     this.lightningLink.nativeElement.click();
   }
 

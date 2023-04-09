@@ -1,60 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Event, Filter, Relay, relayInit, EventTemplate, finishEvent } from 'nostr-tools';
+import { Event, Filter, Relay, relayInit, EventTemplate, finishEvent, SimplePool } from 'nostr-tools';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { Answer, Question, Comment, Profile } from '../models/model';
 import { KeyManagementService } from './key.service';
+import { RelayService } from './relay.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NostrService {
-  private relay: Relay;
+  private relay: SimplePool;
   private connected = new BehaviorSubject<boolean>(false);
   private loggedInUser = new ReplaySubject<Profile>();
 
-  private static THUNDERSTACK_TAG = "thunderstack_test";
+  private static THUNDERSTACK_TAG = "zapstack_test";
 
-  constructor(private keyManagementService: KeyManagementService) {
-    this.connectRelay('wss://relay.damus.io')
-  }
-
-  isConnected(): Observable<boolean> {
-    return this.connected.asObservable();
+  constructor(private keyManagementService: KeyManagementService,
+    private relayService: RelayService) {
+    this.relay = new SimplePool();
   }
 
   getLoggedInUser(): Observable<Profile> {
     return this.loggedInUser.asObservable();
-  }
-
-  async connectRelay(url: string) {
-    await this.connect(url)
-  }
-
-  private async connect(url: string) {
-    if (this.relay) {
-      await this.relay.close()
-    }
-
-    this.relay = relayInit(url)
-
-    this.relay.on('connect', () => {
-      console.log('Connected to relay at', url)
-      this.loadProfile();
-      this.connected.next(true)
-    })
-
-    this.relay.on('disconnect', () => {
-      console.log('Disconnected from relay at', url)
-      this.connected.next(false);
-    })
-
-    this.relay.on('error', (reason: any) => {
-      console.log('Error connecting to relay at', url)
-      console.log(reason)
-      this.connected.next(false);
-    })
-
-    await this.relay.connect();
   }
 
   loadProfile() {
@@ -83,7 +50,7 @@ export class NostrService {
     }
 
     if (questionId) {
-      event.tags.push(['e', questionId, this.relay.url])
+      event.tags.push(['e', questionId, this.relayService.getMainRelay()])
     }
 
     const signedEvent = finishEvent(event, this.keyManagementService.getPrivKey())
@@ -97,7 +64,7 @@ export class NostrService {
       '#t': [NostrService.THUNDERSTACK_TAG]
     };
 
-    const events: Event[] = await this.relay.list([filter]);
+    const events: Event[] = await this.relay.list(this.relayService.getRelays(), [filter]);
 
     return events.map((event: Event) => {
       return {
@@ -116,25 +83,7 @@ export class NostrService {
       created_at: Math.round(Date.now() / 1000),
       tags: [
         ['t', NostrService.THUNDERSTACK_TAG],
-        ['e', topicId, this.relay.url, 'root']
-      ],
-      content: message
-    }
-
-    const signedEvent = finishEvent(event, this.keyManagementService.getPrivKey())
-
-    return this.publishEvent(signedEvent);
-  }
-
-  async createComment(questionId: string, message: string, parentId: string): Promise<string> {
-
-    const event: EventTemplate = {
-      kind: 42,
-      created_at: Math.round(Date.now() / 1000),
-      tags: [
-        ['t', NostrService.THUNDERSTACK_TAG],
-        ['e', questionId, this.relay.url, 'reply'],
-        ['p', parentId]
+        ['e', topicId, ...this.relayService.getRelays(), 'root']
       ],
       content: message
     }
@@ -170,7 +119,7 @@ export class NostrService {
         ['e', answerId],
         ['p', receiverPubKey],
         ['amount', amount.toString()],
-        ['relays', this.relay.url]
+        ['relays', ...this.relayService.getRelays()]
       ],
       content: '',
     }
@@ -187,7 +136,7 @@ export class NostrService {
       '#e': [answerId]
     };
 
-    const events: Event[] = await this.relay.list([filter]);
+    const events: Event[] = await this.relay.list(this.relayService.getRelays(), [filter]);
 
     // Create a map of users to their latest vote events
     const latestVotes: { [key: string]: Event } = {};
@@ -216,7 +165,7 @@ export class NostrService {
       '#e': [answerId]
     };
 
-    const events: Event[] = await this.relay.list([filter]);
+    const events: Event[] = await this.relay.list(this.relayService.getRelays(), [filter]);
 
     const zapSum = events.flatMap(e => {
       const desc = this.getTag(e.tags, 'description')
@@ -238,7 +187,7 @@ export class NostrService {
     };
 
     return new Promise((resolve) => {
-      const sub = this.relay.sub([filter]);
+      const sub = this.relay.sub(this.relayService.getRelays(), [filter]);
       sub.on('event', (event: Event) => {
         const bolt11Tag = this.getTag(event.tags, 'bolt11')
         if (bolt11Tag && bolt11Tag == invoice) {
@@ -261,7 +210,7 @@ export class NostrService {
       '#e': [topicId] //TODO filter by 'root' Tag
     };
 
-    const events: Event[] = await this.relay.list([filter]);
+    const events: Event[] = await this.relay.list(this.relayService.getRelays(), [filter]);
 
     return events.flatMap((event: Event) => {
       let posts: Answer[] = []
@@ -285,7 +234,7 @@ export class NostrService {
       '#p': [postId]
     };
 
-    const events: Event[] = await this.relay.list([filter]);
+    const events: Event[] = await this.relay.list(this.relayService.getRelays(), [filter]);
 
     return events.map((event: Event) => {
       const post: Comment = {
@@ -303,7 +252,7 @@ export class NostrService {
       ids: [questionId]
     };
 
-    const event: Event | null = await this.relay.get(filter)
+    const event: Event | null = await this.relay.get(this.relayService.getRelays(), filter)
 
     if (!event) {
       throw new Error(`Question with id ${questionId} not found`);
@@ -332,7 +281,7 @@ export class NostrService {
 
     const signedEvent = finishEvent(event, this.keyManagementService.getPrivKey())
 
-    const pub = this.relay.publish(signedEvent)
+    const pub = this.relay.publish(this.relayService.getRelays(), signedEvent)
     pub.on('ok', () => {
       console.log('deletion event sucessfully submitted')
     })
@@ -348,7 +297,7 @@ export class NostrService {
       ids: [answerId]
     };
 
-    const event: Event | null = await this.relay.get(filter)
+    const event: Event | null = await this.relay.get(this.relayService.getRelays(), filter)
 
     if (!event) {
       throw new Error(`Answer with id ${answerId} not found`);
@@ -367,7 +316,7 @@ export class NostrService {
       limit: 1
     };
 
-    const event: Event | null = await this.relay.get(filter)
+    const event: Event | null = await this.relay.get(this.relayService.getRelays(), filter)
 
     if (!event) {
       throw new Error(`Profile for ${pubkey} not found`);
@@ -397,7 +346,7 @@ export class NostrService {
 
   private publishEvent(signedEvent: Event): Promise<string> {
     return new Promise((resolve, reject) => {
-      let pub = this.relay.publish(signedEvent);
+      let pub = this.relay.publish(this.relayService.getRelays(), signedEvent);
       pub.on('ok', () => {
         console.log('event sucessfully published');
         console.log(signedEvent);
